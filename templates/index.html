@@ -1,220 +1,373 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Indian House Price Predictor | Github/izaanz</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        body {
-            padding: 20px;
-            background-color: #f8f9fa;
-        }
-        .prediction-form {
-            max-width: 800px;
-            margin: 0 auto;
-            background-color: white;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
-        }
-        .result {
-            margin-top: 20px;
-            padding: 20px;
-            background-color: #e9ecef;
-            border-radius: 5px;
-            display: none;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Indian House Price Predictor</title>
+
+<!-- Bootstrap -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<!-- Bootstrap Icons -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+
+<!-- Google Font -->
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+body{
+  font-family:'Poppins',sans-serif;
+  background:linear-gradient(135deg,#667eea,#764ba2);
+  min-height:100vh;
+  padding:20px;
+}
+.prediction-form{
+  max-width:1000px;
+  margin:auto;
+  background:#fff;
+  padding:35px;
+  border-radius:16px;
+  box-shadow:0 15px 40px rgba(0,0,0,.15);
+}
+.input-group-text{
+  background:#f1f3f5;
+}
+.form-control,.form-select{
+  border-radius:0 10px 10px 0;
+}
+.btn-primary{
+  background:linear-gradient(135deg,#667eea,#764ba2);
+  border:none;
+  border-radius:30px;
+  padding:12px 40px;
+}
+.btn-outline-secondary{
+  border-radius:30px;
+  padding:12px 35px;
+}
+.result{
+  display:none;
+  margin-top:30px;
+  padding:25px;
+  border-left:6px solid #667eea;
+  background:#f1f8ff;
+  border-radius:12px;
+}
+#predicted-price{
+  font-size:28px;
+  font-weight:600;
+  color:#2c7be5;
+}
+.spinner-overlay{
+  display:none;
+  position:fixed;
+  inset:0;
+  background:rgba(255,255,255,.85);
+  z-index:999;
+  align-items:center;
+  justify-content:center;
+}
+</style>
 </head>
+
 <body>
-    <div class="container">
-        <div class="prediction-form">
-            <h2 class="mb-4 text-center">Indian House Price Predictor</h2>
-            <form id="predictionForm">
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label for="state" class="form-label">State</label>
-                        <input type="text" class="form-control" id="state" name="State" required>
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <label for="city" class="form-label">City</label>
-                        <input type="text" class="form-control" id="city" name="City" required>
-                    </div>
-                </div>
 
-                <div class="row">
-                    <div class="col-md-4 mb-3">
-                        <label for="property_type" class="form-label">Property Type</label>
-                        <select class="form-select" id="property_type" name="Property_Type">
-                            <option value="0">Apartment</option>
-                            <option value="1">Independent House</option>
-                        </select>
-                    </div>
-                    <div class="col-md-4 mb-3">
-                        <label for="bhk" class="form-label">BHK</label>
-                        <input type="number" class="form-control" id="bhk" name="BHK" required>
-                    </div>
-                    <div class="col-md-4 mb-3">
-                        <label for="size" class="form-label">Size (SqFt)</label>
-                        <input type="number" class="form-control" id="size" name="Size_in_SqFt" required>
-                    </div>
-                </div>
+<!-- Spinner -->
+<div class="spinner-overlay" id="spinner">
+  <div class="spinner-border text-primary"></div>
+</div>
 
-                <div class="row">
-                    <div class="col-md-4 mb-3">
-                        <label for="price_per_sqFt" class="form-label">Price per Sqrt</label>
-                        <input type="number" class="form-control" id="price_per_sqFt" name="Price_per_SqFt" required>
-                    </div>
-                    <div class="col-md-4 mb-3">
-                        <label for="year_built" class="form-label">Year Built</label>
-                        <input type="number" class="form-control" id="year_built" name="Year_Built" required>
-                    </div>
-                    <div class="col-md-4 mb-3">
-                        <label for="furnished_status" class="form-label">Furnished Status</label>
-                        <select class="form-select" id="furnished_status" name="Furnished_Status">
-                            <option value="0">Unfurnished</option>
-                            <option value="1">Semi-Furnished</option>
-                            <option value="2">Fully Furnished</option>
-                        </select>
-                    </div>
-                </div>
+<div class="prediction-form">
+<h2 class="text-center mb-4">🏠 Indian House Price Predictor</h2>
 
-                <div class="row">
-                    <div class="col-md-4 mb-3">
-                        <label for="floor_no" class="form-label">Floor Number</label>
-                        <input type="number" class="form-control" id="floor_no" name="Floor_No" required>
-                    </div>
-                    <div class="col-md-4 mb-3">
-                        <label for="total_floors" class="form-label">Total Floors</label>
-                        <input type="number" class="form-control" id="total_floors" name="Total_Floors" required>
-                    </div>
-                    <div class="col-md-4 mb-3">
-                        <label for="age" class="form-label">Age of Property</label>
-                        <input type="number" class="form-control" id="age" name="Age_of_Property" required>
-                    </div>
-                </div>
+<form id="predictionForm">
 
-                <div class="row">
-                    <div class="col-md-4 mb-3">
-                        <label for="nearby_schools" class="form-label">Nearby Schools</label>
-                        <input type="number" class="form-control" id="nearby_schools" name="Nearby_Schools" required>
-                    </div>
-                    <div class="col-md-4 mb-3">
-                        <label for="nearby_hospitals" class="form-label">Nearby Hospitals</label>
-                        <input type="number" class="form-control" id="nearby_hospitals" name="Nearby_Hospitals" required>
-                    </div>
-                    <div class="col-md-4 mb-3">
-                        <label for="transport" class="form-label">Public Transport Accessibility</label>
-                        <select class="form-select" id="transport" name="Public_Transport_Accessibility">
-                            <option value="0">Poor</option>
-                            <option value="1">Good</option>
-                            <option value="2">Excellent</option>
-                        </select>
-                    </div>
-                </div>
+<!-- State / City -->
+<div class="row">
+<div class="col-md-6 mb-3">
+<label>State</label>
+<div class="input-group">
+<span class="input-group-text"><i class="bi bi-geo-alt"></i></span>
+<input class="form-control" list="stateList" id="state" name="State"
+placeholder="Select or type state" required>
+<datalist id="stateList"></datalist>
+</div>
+</div>
 
-                <div class="row">
-                    <div class="col-md-4 mb-3">
-                        <label for="parking" class="form-label">Parking Space</label>
-                        <select class="form-select" id="parking" name="Parking_Space">
-                            <option value="yes">Yes</option>
-                            <option value="no">No</option>
-                        </select>
-                    </div>
-                    <div class="col-md-4 mb-3">
-                        <label for="security" class="form-label">Security</label>
-                        <select class="form-select" id="security" name="Security">
-                            <option value="0">No</option>
-                            <option value="1">Yes</option>
-                        </select>
-                    </div>
-                    <div class="col-md-4 mb-3">
-                        <label for="facing" class="form-label">Facing</label>
-                        <select class="form-select" id="facing" name="Facing">
-                            <option value="0">North</option>
-                            <option value="1">South</option>
-                            <option value="2">East</option>
-                            <option value="3">West</option>
-                        </select>
-                    </div>
-                </div>
+<div class="col-md-6 mb-3">
+<label>City</label>
+<div class="input-group">
+<span class="input-group-text"><i class="bi bi-building"></i></span>
+<input class="form-control" list="cityList" id="city" name="City"
+placeholder="Select or type city" required>
+<datalist id="cityList"></datalist>
+</div>
+</div>
+</div>
 
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label for="owner_type" class="form-label">Owner Type</label>
-                        <select class="form-select" id="owner_type" name="Owner_Type">
-                            <option value="owner">Owner</option>
-                            <option value="broker">Broker</option>
-                        </select>
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <label for="availability" class="form-label">Availability Status</label>
-                        <select class="form-select" id="availability" name="Availability_Status">
-                            <option value="ready_to_move">Ready to Move</option>
-                            <option value="under_construction">Under Construction</option>
-                        </select>
-                    </div>
-                </div>
+<!-- Property -->
+<div class="row">
+<div class="col-md-4 mb-3">
+<label>Property Type</label>
+<div class="input-group">
+<span class="input-group-text"><i class="bi bi-house"></i></span>
+<select class="form-select" name="Property_Type">
+<option value="0">Apartment</option>
+<option value="1">Independent House</option>
+</select>
+</div>
+</div>
 
-                <div class="mb-3">
-                    <label for="amenities" class="form-label">Amenities</label>
-                    <input type="text" class="form-control" id="amenities" name="Amenities" 
-                           placeholder="e.g., garden, pool, gym, playground, clubhouse">
-                </div>
+<div class="col-md-4 mb-3">
+<label>BHK</label>
+<div class="input-group">
+<span class="input-group-text"><i class="bi bi-door-open"></i></span>
+<input type="number" class="form-control" name="BHK" required>
+</div>
+</div>
 
-                <div class="text-center">
-                    <button type="submit" class="btn btn-primary">Predict Price</button>
-                </div>
-            </form>
+<div class="col-md-4 mb-3">
+<label>Size (SqFt)</label>
+<div class="input-group">
+<span class="input-group-text"><i class="bi bi-arrows-fullscreen"></i></span>
+<input type="number" class="form-control" name="Size_in_SqFt" required>
+</div>
+</div>
+</div>
 
-            <div class="result mt-4" id="result">
-                <h4 class="text-center">Predicted House Price (in lakhs):</h4>
-                <h3 class="text-center" id="predicted-price"></h3>
-            </div>
-        </div>
-    </div>
+<!-- Pricing -->
+<div class="row">
+<div class="col-md-4 mb-3">
+<label>Price / SqFt</label>
+<div class="input-group">
+<span class="input-group-text"><i class="bi bi-currency-rupee"></i></span>
+<input type="number" class="form-control" name="Price_per_SqFt" required>
+</div>
+</div>
 
-    <script>
-        document.getElementById('predictionForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            const formData = new FormData(e.target);
-            const data = {};
-            for (let [key, value] of formData.entries()) {
-                // Convert numeric strings to numbers where appropriate
-                if (!isNaN(value) && key !== 'State' && key !== 'City' && 
-                    key !== 'Parking_Space' && key !== 'Owner_Type' && 
-                    key !== 'Availability_Status' && key !== 'Amenities') {
-                    data[key] = Number(value);
-                } else {
-                    data[key] = value;
-                }
-            }
+<div class="col-md-4 mb-3">
+<label>Year Built</label>
+<div class="input-group">
+<span class="input-group-text"><i class="bi bi-calendar"></i></span>
+<input type="number" class="form-control" name="Year_Built" required>
+</div>
+</div>
 
-            try {
-                const response = await fetch('http://127.0.0.1:9696/predict', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(data)
-                });
+<div class="col-md-4 mb-3">
+<label>Furnished Status</label>
+<div class="input-group">
+<span class="input-group-text"><i class="bi bi-lamp"></i></span>
+<select class="form-select" name="Furnished_Status">
+<option value="0">Unfurnished</option>
+<option value="1">Semi-Furnished</option>
+<option value="2">Fully Furnished</option>
+</select>
+</div>
+</div>
+</div>
 
-                const result = await response.json();
-                
-                // Show the result div
-                document.getElementById('result').style.display = 'block';
-                // Format the price with commas and display
-                document.getElementById('predicted-price').textContent = 
-                    '₹ ' + result.price.toLocaleString('en-IN');
-            } catch (error) {
-                console.error('Error:', error);
-                alert('Error predicting price. Please try again.');
-            }
-        });
-    </script>
+<!-- Building -->
+<div class="row">
+<div class="col-md-4 mb-3">
+<label>Floor No</label>
+<div class="input-group">
+<span class="input-group-text"><i class="bi bi-layers"></i></span>
+<input type="number" class="form-control" name="Floor_No" required>
+</div>
+</div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+<div class="col-md-4 mb-3">
+<label>Total Floors</label>
+<div class="input-group">
+<span class="input-group-text"><i class="bi bi-building"></i></span>
+<input type="number" class="form-control" name="Total_Floors" required>
+</div>
+</div>
+
+<div class="col-md-4 mb-3">
+<label>Age of Property</label>
+<div class="input-group">
+<span class="input-group-text"><i class="bi bi-hourglass"></i></span>
+<input type="number" class="form-control" name="Age_of_Property" required>
+</div>
+</div>
+</div>
+
+<!-- Nearby -->
+<div class="row">
+<div class="col-md-4 mb-3">
+<label>Nearby Schools</label>
+<div class="input-group">
+<span class="input-group-text"><i class="bi bi-mortarboard"></i></span>
+<input type="number" class="form-control" name="Nearby_Schools" required>
+</div>
+</div>
+
+<div class="col-md-4 mb-3">
+<label>Nearby Hospitals</label>
+<div class="input-group">
+<span class="input-group-text"><i class="bi bi-hospital"></i></span>
+<input type="number" class="form-control" name="Nearby_Hospitals" required>
+</div>
+</div>
+
+<div class="col-md-4 mb-3">
+<label>Public Transport</label>
+<div class="input-group">
+<span class="input-group-text"><i class="bi bi-bus-front"></i></span>
+<select class="form-select" name="Public_Transport_Accessibility">
+<option value="0">Poor</option>
+<option value="1">Good</option>
+<option value="2">Excellent</option>
+</select>
+</div>
+</div>
+</div>
+
+<!-- Extras -->
+<div class="row">
+<div class="col-md-4 mb-3">
+<label>Parking</label>
+<div class="input-group">
+<span class="input-group-text"><i class="bi bi-car-front"></i></span>
+<select class="form-select" name="Parking_Space">
+<option value="yes">Yes</option>
+<option value="no">No</option>
+</select>
+</div>
+</div>
+
+<div class="col-md-4 mb-3">
+<label>Security</label>
+<div class="input-group">
+<span class="input-group-text"><i class="bi bi-shield-check"></i></span>
+<select class="form-select" name="Security">
+<option value="0">No</option>
+<option value="1">Yes</option>
+</select>
+</div>
+</div>
+
+<div class="col-md-4 mb-3">
+<label>Facing</label>
+<div class="input-group">
+<span class="input-group-text"><i class="bi bi-compass"></i></span>
+<select class="form-select" name="Facing">
+<option value="0">North</option>
+<option value="1">South</option>
+<option value="2">East</option>
+<option value="3">West</option>
+</select>
+</div>
+</div>
+</div>
+
+<!-- Owner -->
+<div class="row">
+<div class="col-md-6 mb-3">
+<label>Owner Type</label>
+<div class="input-group">
+<span class="input-group-text"><i class="bi bi-person"></i></span>
+<select class="form-select" name="Owner_Type">
+<option value="owner">Owner</option>
+<option value="broker">Broker</option>
+</select>
+</div>
+</div>
+
+<div class="col-md-6 mb-3">
+<label>Availability</label>
+<div class="input-group">
+<span class="input-group-text"><i class="bi bi-clock-history"></i></span>
+<select class="form-select" name="Availability_Status">
+<option value="ready_to_move">Ready to Move</option>
+<option value="under_construction">Under Construction</option>
+</select>
+</div>
+</div>
+</div>
+
+<!-- Amenities -->
+<div class="mb-3">
+<label>Amenities</label>
+<div class="input-group">
+<span class="input-group-text"><i class="bi bi-stars"></i></span>
+<input class="form-control" name="Amenities"
+placeholder="garden, pool, gym, clubhouse">
+</div>
+</div>
+
+<!-- Buttons -->
+<div class="text-center d-flex justify-content-center gap-3 mt-4">
+<button type="submit" class="btn btn-primary">Predict Price</button>
+<button type="reset" class="btn btn-outline-secondary" id="resetBtn">Reset</button>
+</div>
+
+</form>
+
+<div class="result text-center" id="result">
+<h4>Predicted House Price (₹ Lakhs)</h4>
+<h3 id="predicted-price"></h3>
+</div>
+</div>
+
+<script>
+const cities={
+"Maharashtra":["Mumbai","Pune","Nagpur"],
+"Karnataka":["Bangalore","Mysore"],
+"Delhi":["New Delhi"],
+"Tamil Nadu":["Chennai","Coimbatore"],
+"Telangana":["Hyderabad", "Khammam", "Warangal"]
+};
+
+const state=document.getElementById("state");
+const city=document.getElementById("city");
+const stateList=document.getElementById("stateList");
+const cityList=document.getElementById("cityList");
+
+Object.keys(cities).forEach(s=>{
+stateList.innerHTML+=`<option value="${s}">`;
+});
+
+state.addEventListener("input",()=>{
+cityList.innerHTML="";
+(cities[state.value]||[]).forEach(c=>{
+cityList.innerHTML+=`<option value="${c}">`;
+});
+});
+
+const form=document.getElementById("predictionForm");
+const spinner=document.getElementById("spinner");
+const result=document.getElementById("result");
+const price=document.getElementById("predicted-price");
+
+form.addEventListener("submit",async e=>{
+e.preventDefault();
+spinner.style.display="flex";
+
+const data={};
+new FormData(form).forEach((v,k)=>{
+data[k]=isNaN(v)?v:Number(v);
+});
+
+const res=await fetch("http://127.0.0.1:9696/predict",{
+method:"POST",
+headers:{"Content-Type":"application/json"},
+body:JSON.stringify(data)
+});
+const r=await res.json();
+
+spinner.style.display="none";
+result.style.display="block";
+price.textContent="₹ "+r.price.toLocaleString("en-IN");
+});
+
+document.getElementById("resetBtn").onclick=()=>{
+result.style.display="none";
+price.textContent="";
+};
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
