@@ -5,7 +5,7 @@ host = "127.0.0.1"
 url = f'http://{host}:9696/predict'
 
 data = {'State': 'telangana',
- 'City': 'warangal',
+ 'City': 'khammam',
  'Property_Type': 0.0,
  'BHK': 1,
  'Size_in_SqFt': 2059,
