@@ -63,10 +63,10 @@ The following performance metrics were achieved by the trained models:
 
 | Model | MAE | MSE | RMSE | R² Score |
 |-------|-----|-----|------|----------|
-| Linear Regression | 81.75 | 10364.25 | 101.80 | 0.488 |
-| Decision Tree | 7.70 | 96.81 | 9.84 | 0.995 |
-| Random Forest | 50.60 | 3910.55 | 62.53 | 0.807 |
-| XGBoost | 6.96 | 78.74 | 8.87 | 0.996 |
+| Linear Regression | 80.95 | 10127.17 | 100.63 | 0.49 |
+| Decision Tree | 7.90 | 101.53 | 10.07 | 0.994 |
+| Random Forest | 50.59 | 3902.59 | 62.47 | 0.804 |
+| XGBoost | 7.07 | 81.86 | 9.04 | 0.995 |
 
 ### Bar Plot Comparison of Models
 
@@ -129,8 +129,9 @@ To deploy using Docker:
    docker run -p 9696:9696 india-house-price-predictor
    ```
 
-   The model will be accessible at `http://localhost:9696/predict`.
+   The model will be accessible and can get the predicted price at `http://localhost:9696/predict`.
 
+   ![Front end](https://github.com/Krishnakanth834/india-home-price-ml/blob/main/img/frontend.png)
 This Dockerfile sets up a Python 3.11 environment, installs Pipenv, and copies the required files into the container. It then exposes port 9696 and sets up the Waitress server to serve the model.
 
 
