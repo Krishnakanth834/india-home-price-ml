@@ -131,7 +131,7 @@ To deploy using Docker:
 
    The model will be accessible and can get the predicted price at `http://localhost:9696/predict`.
 
-   ![Front end](https://github.com/Krishnakanth834/india-home-price-ml/blob/main/img/frontend.png)
+   ![Front end](https://github.com/Krishnakanth834/india-home-price-ml/blob/main/img/frontend_local.png)
 This Dockerfile sets up a Python 3.11 environment, installs Pipenv, and copies the required files into the container. It then exposes port 9696 and sets up the Waitress server to serve the model.
 
 
@@ -172,6 +172,14 @@ Use predict_test.py to send test queries to your model:
   ```
 
   Modify this script to format your input data as per the model's expectations.
+
+## Deployed on Cloud
+This is a machine learning-based web application for predicting house prices in India. The app is powered by a regression model that takes various house attributes (such as location, size, number of rooms, etc.) to predict the price of a house.
+
+The app is deployed on the cloud and can be accessed through the following link: 
+https://india-home-price-ml.onrender.com
+
+![Cloud Deployment](https://github.com/Krishnakanth834/india-home-price-ml/blob/main/img/frontend.png)
 
 ## Contributions
 
